@@ -65,7 +65,7 @@ function Hero() {
       <div className="container hero-inner">
         <div className="hero-copy">
           <p className="hero-kicker" data-reveal>
-            LIU CHENGLIN · MARKETING / NEW MEDIA / PRODUCT OPERATIONS
+            LIU CHENGLIN · READY FOR ANY INDUSTRY
           </p>
           <h1 className="hero-title" data-reveal>
             刘成林<span>.</span>
@@ -88,6 +88,9 @@ function Hero() {
           </div>
         </div>
         <HeroSide />
+        <div className="hero-vinyl">
+          <FakeVinyl />
+        </div>
       </div>
       <a className="hero-scroll" href="#experience">
         <span />
@@ -97,51 +100,127 @@ function Hero() {
   )
 }
 
+function FakeVinyl() {
+  const [playing, setPlaying] = useState(false)
+
+  return (
+    <div className="vinyl-wrap">
+      {playing && (
+        <span className="bubble" role="status">
+          嘿嘿，骗到你了 —— 其实我不会往网页里加音乐 🤫
+        </span>
+      )}
+      <button
+        type="button"
+        className={`vinyl${playing ? ' is-playing' : ''}`}
+        onClick={() => setPlaying((p) => !p)}
+        aria-label={playing ? '再点一下，回到待机状态' : '点击这张黑胶唱片'}
+      >
+        {[1, 2, 3, 4, 5].map((n) => (
+          <span key={n} className={`vinyl-note vinyl-note--${n}`} aria-hidden="true">
+            <svg viewBox="0 0 20 26" fill="currentColor">
+              <ellipse cx="6" cy="20" rx="5.2" ry="4.2" />
+              <rect x="9.8" y="2" width="2.2" height="18" rx="1.1" />
+              <path d="M12 2c3.1.6 5.2 1.8 5.9 4.3-.9-1.4-2.7-2.3-5.9-2.7z" />
+            </svg>
+          </span>
+        ))}
+        <span className="vinyl-disc">
+          <span className="vinyl-label">
+            <img src="/vinyl-cover.jpg" alt="唱片封面：周杰伦" />
+          </span>
+        </span>
+        <span className="vinyl-sheen" />
+        <span className="vinyl-play" aria-hidden="true">
+          <svg className="vinyl-play__icon vinyl-play__icon--play" viewBox="0 0 24 24">
+            <path d="M8 5.4v13.2L19 12z" fill="currentColor" />
+          </svg>
+          <svg className="vinyl-play__icon vinyl-play__icon--pause" viewBox="0 0 24 24">
+            <rect x="7" y="5.4" width="3.6" height="13.2" rx="1.4" fill="currentColor" />
+            <rect x="13.4" y="5.4" width="3.6" height="13.2" rx="1.4" fill="currentColor" />
+          </svg>
+        </span>
+        <span className="vinyl-arm" />
+      </button>
+    </div>
+  )
+}
+
+const STICK_LINES = [
+  '看这里看这里 👋',
+  '求求了，给个机会吧 🥺',
+  '点我一下也行，我会鞠躬 🙇',
+  '想聊两句？我随时在线 💬',
+]
+
 function HeroSide() {
   const timer = useRef(null)
+  const lineRef = useRef(0)
   const [bowed, setBowed] = useState(false)
-  const [msg, setMsg] = useState(false)
+  const [line, setLine] = useState(null)
 
   useEffect(() => () => clearTimeout(timer.current), [])
 
-  const bow = () => {
+  const act = () => {
+    lineRef.current = (lineRef.current + 1) % STICK_LINES.length
     setBowed(true)
-    setMsg(true)
+    setLine(STICK_LINES[lineRef.current])
     clearTimeout(timer.current)
     timer.current = setTimeout(() => {
       setBowed(false)
-      setMsg(false)
-    }, 1800)
+      setLine(null)
+    }, 2200)
   }
 
-  const chars = '求求你了我真的很需要这份工作'.split('')
+  // 自己会动：进场 2 秒后先来一次，此后每隔 7 秒主动鞠躬并换一句话
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const first = setTimeout(act, 2200)
+    const loop = setInterval(act, 7200)
+    return () => {
+      clearTimeout(first)
+      clearInterval(loop)
+    }
+  }, [])
+
+  const artLeft = '求求你了'.split('')
+  const artRight = '我真的很需要这份工作'.split('')
 
   return (
     <div className="hero-side">
       <div className="hero-side-top" data-reveal>
         <div className="art-stack" aria-label="求求你了我真的很需要这份工作">
-          {chars.map((ch, i) =>
-            i === 0 ? (
-              <span key={i} className="art-seal">
+          <div className="art-col art-col--top">
+            {artLeft.map((ch, i) =>
+              i === 0 ? (
+                <span key={i} className="art-seal">
+                  {ch}
+                </span>
+              ) : (
+                <span key={i} className={`art-line l${((i - 1) % 5) + 1}`}>
+                  {ch}
+                </span>
+              ),
+            )}
+          </div>
+          <div className="art-col art-col--bottom">
+            {artRight.map((ch, i) => (
+              <span key={i} className={`art-line l${((i + 1) % 5) + 1}`}>
                 {ch}
               </span>
-            ) : (
-              <span key={i} className={`art-line l${((i - 1) % 5) + 1}`}>
-                {ch}
-              </span>
-            ),
-          )}
+            ))}
+          </div>
         </div>
         <div className="figure-wrap" data-reveal>
           <button
             type="button"
             className={`stick${bowed ? ' bowing' : ''}`}
-            onClick={bow}
+            onClick={act}
             aria-label="点击火柴人，它会向你鞠躬"
           >
-            {msg && (
+            {line && (
               <span className="bubble" role="status">
-                承蒙关照！给您鞠躬了 🙇
+                {line}
               </span>
             )}
             <svg viewBox="0 0 200 260" fill="none" stroke="currentColor" strokeWidth="7" strokeLinecap="round">
@@ -152,8 +231,8 @@ function HeroSide() {
               <g className="stick-torso">
                 <circle cx="100" cy="56" r="32" />
                 <path d="M100 88 L100 168" />
-                <path d="M100 104 L62 140" />
-                <path d="M100 104 L138 140" />
+                <path className="stick-arm stick-arm--left" d="M100 104 L62 140" />
+                <path className="stick-arm stick-arm--right" d="M100 104 L138 140" />
                 <g className="stick-face">
                   <circle cx="90" cy="52" r="3.5" fill="currentColor" stroke="none" />
                   <circle cx="110" cy="52" r="3.5" fill="currentColor" stroke="none" />
@@ -163,7 +242,6 @@ function HeroSide() {
               </g>
             </svg>
           </button>
-          <p className="figure-hint">CLICK ME · 戳我一下</p>
         </div>
       </div>
       <div className="hero-tags" data-reveal>
@@ -279,23 +357,22 @@ function TimelineGroup({ title, items, activeId, onZoom }) {
             </ul>
             {item.galleryCount > 0 && (
               <div className="tl-gallery">
-                {item.galleryCaption && <p className="tl-gallery-caption">{item.galleryCaption}</p>}
                 <div className="tl-gallery-carousel">
                   <DepthCarousel
                     items={galleryImages(item).map((src, gi) => ({
                       image: src,
                       alt: `${item.title} · 照片 ${gi + 1}`,
                     }))}
-                    cardWidth={260}
-                    cardHeight={340}
-                    depth={190}
-                    spread={78}
-                    tilt={22}
+                    cardWidth={180}
+                    cardHeight={240}
+                    depth={150}
+                    spread={58}
+                    tilt={20}
                     tiltDirection="right"
-                    perspective={1300}
-                    visibleCards={4}
-                    falloff={0.22}
-                    blur={5}
+                    perspective={1200}
+                    visibleCards={3}
+                    falloff={0.24}
+                    blur={4}
                     duration={700}
                     autoplay
                     autoplayDelay={3200}
@@ -305,9 +382,35 @@ function TimelineGroup({ title, items, activeId, onZoom }) {
                     }
                   />
                 </div>
-                <p className="tl-gallery-hint">
-                  共 {item.galleryCount} 张 · 点击最前面的卡片可放大查看
-                </p>
+                <div className="tl-gallery-text">
+                  <svg
+                    className="tl-gallery-arrow"
+                    viewBox="0 0 120 60"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M116 10 C 84 44, 48 52, 16 42"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    />
+                    <path
+                      d="M30 30 L14 42 L32 50"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  {item.galleryCaption && (
+                    <p className="tl-gallery-caption">{item.galleryCaption}</p>
+                  )}
+                  <p className="tl-gallery-hint">
+                    共 {item.galleryCount} 张 · 点击卡片放大，箭头或拖拽切换
+                  </p>
+                </div>
               </div>
             )}
           </article>
@@ -334,6 +437,17 @@ function Experience({ onZoom }) {
   }, [zoom])
 
   useEffect(() => () => clearTimeout(flashTimer.current), [])
+
+  // 点击页面其他位置时，自动取消高亮
+  useEffect(() => {
+    if (!activeId) return
+    const onDocClick = (e) => {
+      if (e.target.closest('.stat.clickable')) return
+      setActiveId(null)
+    }
+    document.addEventListener('click', onDocClick)
+    return () => document.removeEventListener('click', onDocClick)
+  }, [activeId])
 
   const flash = (target) => {
     if (!target) return
@@ -392,30 +506,32 @@ function Experience({ onZoom }) {
                 <span>{profile.birthday}</span>
               </li>
             </ul>
-            <div className="stat-grid">
-              {stats.map((s) => {
-                const body = (
-                  <>
-                    <b className={s.label ? '' : 'stat-text'}>{s.value}</b>
-                    {s.label && <span>{s.label}</span>}
-                  </>
-                )
-                return s.target ? (
-                  <button
-                    type="button"
-                    key={s.value}
-                    className={`stat clickable${activeId === s.target ? ' is-active' : ''}`}
-                    onClick={() => flash(s.target)}
-                    title={`查看「${s.label}」对应经历`}
-                  >
-                    {body}
-                  </button>
-                ) : (
-                  <div className="stat" key={s.value}>
-                    {body}
-                  </div>
-                )
-              })}
+            <div className="stat-group">
+              <div className="stat-grid">
+                {stats.map((s) => {
+                  const body = (
+                    <>
+                      <b className={s.label ? '' : 'stat-text'}>{s.value}</b>
+                      {s.label && <span>{s.label}</span>}
+                    </>
+                  )
+                  return s.target ? (
+                    <button
+                      type="button"
+                      key={s.value}
+                      className={`stat clickable${activeId === s.target ? ' is-active' : ''}`}
+                      onClick={() => flash(s.target)}
+                      title={`查看「${s.label}」对应经历`}
+                    >
+                      {body}
+                    </button>
+                  ) : (
+                    <div className="stat" key={s.value}>
+                      {body}
+                    </div>
+                  )
+                })}
+              </div>
             </div>
           </aside>
           <div className="exp-timeline">

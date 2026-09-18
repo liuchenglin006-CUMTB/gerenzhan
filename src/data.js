@@ -1,7 +1,7 @@
 export const profile = {
   name: '刘成林',
   en: 'LIU CHENGLIN',
-  role: '市场 / 新媒体 / 产品运营 · 求职者',
+  role: '一个任何行业都能干的研究牲\n（PS：只要价钱到位 💰）',
   intro: [
     '环境科学与工程硕士在读，兼具数据分析、用户运营与项目交付的复合背景。在交付管理、',
     { before: '私', text: '欲', after: '域运营' },
@@ -27,7 +27,7 @@ export const education = [
     note: '（村里人都说我有出息 👍👍）',
     period: '2024.09 – 2027.06',
     points: [
-      '连续两年获研究生学业奖学金（2024、2025）；全国大学生职业规划大赛三等奖，专业排名前 10%。',
+      '连续三年获研究生学业奖学金（2024、2025、2026）；全国大学生英语竞赛二等奖，英语可作为工作语言，全国大学生职业规划大赛三等奖、专业排名前 10%。',
       '研究方向：工业固废协同循环利用与高值化材料合成，熟悉各类污染物的环保合规要求。',
     ],
   },
@@ -45,7 +45,7 @@ export const experience = [
   {
     id: 'dongsoft',
     title: '东软集团股份有限公司',
-    sub: '交付实习生',
+    sub: '交付管培生',
     note: '（当时入职的时候给我高兴坏了，大公司）🎉',
     period: '2026.04 – 2026.08',
     galleryDir: 'gallery/dongruan',
@@ -62,7 +62,7 @@ export const experience = [
   {
     id: 'xdf',
     title: '北京新东方学校',
-    sub: '社群运营',
+    sub: '私域运营',
     note: '（我去，我当时居然做了这么多东西吗）🤔',
     period: '2025.06 – 2025.08',
     points: [
@@ -74,7 +74,7 @@ export const experience = [
   {
     id: 'xianyu',
     title: '闲鱼 / 校园电商',
-    sub: '个人项目',
+    sub: '个人电商',
     note: '（我从来不挣有钱人的钱）💰',
     period: '2024.10 – 2026.06',
     points: [
