@@ -190,7 +190,70 @@ function SectionHead({ index, title, en }) {
   )
 }
 
-function TimelineGroup({ title, items, activeId }) {
+const galleryImages = (item) =>
+  item.galleryCount
+    ? Array.from(
+        { length: item.galleryCount },
+        (_, i) =>
+          `/${item.galleryDir}/img-${String(i + 1).padStart(2, '0')}.${item.galleryExt || 'png'}`,
+      )
+    : []
+
+function ImageLightbox({ zoom, setZoom }) {
+  if (!zoom) return null
+  const { gallery, title, index } = zoom
+  const step = (delta) =>
+    setZoom((z) => z && { ...z, index: (z.index + delta + z.gallery.length) % z.gallery.length })
+
+  return (
+    <div
+      className="lightbox"
+      onClick={() => setZoom(null)}
+      role="dialog"
+      aria-modal="true"
+      aria-label="图片放大预览"
+    >
+      <button
+        type="button"
+        className="lightbox-nav lightbox-nav--prev"
+        aria-label="上一张"
+        onClick={(e) => {
+          e.stopPropagation()
+          step(-1)
+        }}
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M15 5l-7 7 7 7" />
+        </svg>
+      </button>
+      <img
+        key={index}
+        className="lightbox-img"
+        src={gallery[index]}
+        alt={`${title} · 图片 ${index + 1}`}
+        onClick={(e) => e.stopPropagation()}
+      />
+      <button
+        type="button"
+        className="lightbox-nav lightbox-nav--next"
+        aria-label="下一张"
+        onClick={(e) => {
+          e.stopPropagation()
+          step(1)
+        }}
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+      <p className="lightbox-hint">
+        {index + 1} / {gallery.length} · ← → 切换 · 点击任意处关闭 · ESC
+      </p>
+    </div>
+  )
+}
+
+function TimelineGroup({ title, items, activeId, onZoom }) {
   return (
     <div className="tl-group">
       <p className="tl-title">{title}</p>
@@ -214,6 +277,39 @@ function TimelineGroup({ title, items, activeId }) {
                 <li key={point}>{point}</li>
               ))}
             </ul>
+            {item.galleryCount > 0 && (
+              <div className="tl-gallery">
+                {item.galleryCaption && <p className="tl-gallery-caption">{item.galleryCaption}</p>}
+                <div className="tl-gallery-carousel">
+                  <DepthCarousel
+                    items={galleryImages(item).map((src, gi) => ({
+                      image: src,
+                      alt: `${item.title} · 照片 ${gi + 1}`,
+                    }))}
+                    cardWidth={260}
+                    cardHeight={340}
+                    depth={190}
+                    spread={78}
+                    tilt={22}
+                    tiltDirection="right"
+                    perspective={1300}
+                    visibleCards={4}
+                    falloff={0.22}
+                    blur={5}
+                    duration={700}
+                    autoplay
+                    autoplayDelay={3200}
+                    loop
+                    onZoom={(gi) =>
+                      onZoom({ gallery: galleryImages(item), title: item.title, index: gi })
+                    }
+                  />
+                </div>
+                <p className="tl-gallery-hint">
+                  共 {item.galleryCount} 张 · 点击最前面的卡片可放大查看
+                </p>
+              </div>
+            )}
           </article>
         ))}
       </div>
@@ -221,7 +317,7 @@ function TimelineGroup({ title, items, activeId }) {
   )
 }
 
-function Experience() {
+function Experience({ onZoom }) {
   const [zoom, setZoom] = useState(false)
   const [activeId, setActiveId] = useState(null)
   const flashTimer = useRef(null)
@@ -324,7 +420,12 @@ function Experience() {
           </aside>
           <div className="exp-timeline">
             <TimelineGroup title="教育背景" items={education} activeId={activeId} />
-            <TimelineGroup title="实习经历" items={experience} activeId={activeId} />
+            <TimelineGroup
+              title="实习经历"
+              items={experience}
+              activeId={activeId}
+              onZoom={onZoom}
+            />
           </div>
         </div>
       </div>
@@ -381,40 +482,14 @@ function ProjectCover({ project, i }) {
   )
 }
 
-function Projects() {
-  const [zoom, setZoom] = useState(null) // { gallery, title, index }
-
-  const galleryOf = (project) =>
-    project.galleryCount
-      ? Array.from({ length: project.galleryCount }, (_, gi) =>
-          `/projects/${project.galleryDir}/img-${String(gi + 1).padStart(2, '0')}.png`,
-        )
-      : []
-
-  useEffect(() => {
-    if (!zoom) return
-    const onKey = (e) => {
-      if (e.key === 'Escape') setZoom(null)
-      if (e.key === 'ArrowLeft')
-        setZoom((z) => z && { ...z, index: (z.index - 1 + z.gallery.length) % z.gallery.length })
-      if (e.key === 'ArrowRight')
-        setZoom((z) => z && { ...z, index: (z.index + 1) % z.gallery.length })
-    }
-    document.addEventListener('keydown', onKey)
-    document.body.style.overflow = 'hidden'
-    return () => {
-      document.removeEventListener('keydown', onKey)
-      document.body.style.overflow = ''
-    }
-  }, [zoom])
-
+function Projects({ onZoom }) {
   return (
     <section id="projects" className="section">
       <div className="container">
         <SectionHead index="02" title="项目经历" en="SELECTED WORK" />
         <div className="project-list">
           {projects.map((project, i) => {
-            const projectGallery = galleryOf(project)
+            const projectGallery = galleryImages(project)
             return (
               <article className="project" key={project.title}>
                 {project.galleryCount ? (
@@ -439,7 +514,7 @@ function Projects() {
                       autoplayDelay={3600}
                       loop
                       onZoom={(gi) =>
-                        setZoom({ gallery: projectGallery, title: project.title, index: gi })
+                        onZoom({ gallery: projectGallery, title: project.title, index: gi })
                       }
                     />
                     <span className="cover-label">
@@ -471,54 +546,6 @@ function Projects() {
           })}
         </div>
       </div>
-      {zoom && (
-        <div
-          className="lightbox"
-          onClick={() => setZoom(null)}
-          role="dialog"
-          aria-modal="true"
-          aria-label="项目图片放大预览"
-        >
-          <button
-            type="button"
-            className="lightbox-nav lightbox-nav--prev"
-            aria-label="上一张"
-            onClick={(e) => {
-              e.stopPropagation()
-              setZoom((z) =>
-                z && { ...z, index: (z.index - 1 + z.gallery.length) % z.gallery.length },
-              )
-            }}
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M15 5l-7 7 7 7" />
-            </svg>
-          </button>
-          <img
-            key={zoom.index}
-            className="lightbox-img"
-            src={zoom.gallery[zoom.index]}
-            alt={`${zoom.title} · 图片 ${zoom.index + 1}`}
-            onClick={(e) => e.stopPropagation()}
-          />
-          <button
-            type="button"
-            className="lightbox-nav lightbox-nav--next"
-            aria-label="下一张"
-            onClick={(e) => {
-              e.stopPropagation()
-              setZoom((z) => z && { ...z, index: (z.index + 1) % z.gallery.length })
-            }}
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-          <p className="lightbox-hint">
-            {zoom.index + 1} / {zoom.gallery.length} · ← → 切换 · 点击任意处关闭 · ESC
-          </p>
-        </div>
-      )}
     </section>
   )
 }
@@ -621,6 +648,25 @@ function Contact() {
 
 export default function App() {
   useReveal()
+  const [zoom, setZoom] = useState(null)
+
+  useEffect(() => {
+    if (!zoom) return
+    const onKey = (e) => {
+      if (e.key === 'Escape') setZoom(null)
+      if (e.key === 'ArrowLeft')
+        setZoom((z) => z && { ...z, index: (z.index - 1 + z.gallery.length) % z.gallery.length })
+      if (e.key === 'ArrowRight')
+        setZoom((z) => z && { ...z, index: (z.index + 1) % z.gallery.length })
+    }
+    document.addEventListener('keydown', onKey)
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = ''
+    }
+  }, [zoom])
+
   return (
     <>
       <div className="page-bg" aria-hidden="true">
@@ -643,11 +689,12 @@ export default function App() {
       <Nav />
       <main>
         <Hero />
-        <Experience />
-        <Projects />
+        <Experience onZoom={setZoom} />
+        <Projects onZoom={setZoom} />
         <Strengths />
       </main>
       <Contact />
+      <ImageLightbox zoom={zoom} setZoom={setZoom} />
     </>
   )
 }

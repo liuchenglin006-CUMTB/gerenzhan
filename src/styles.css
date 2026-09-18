@@ -1090,6 +1090,31 @@ ul {
   opacity: 0.7;
 }
 
+.tl-gallery {
+  margin-top: 20px;
+}
+
+.tl-gallery-caption {
+  font-size: 14px;
+  line-height: 1.85;
+  color: var(--muted);
+  border-left: 2px solid rgba(110, 231, 255, 0.45);
+  padding-left: 14px;
+  margin-bottom: 16px;
+}
+
+.tl-gallery-carousel {
+  height: 380px;
+}
+
+.tl-gallery-hint {
+  margin-top: 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--muted);
+}
+
 /* ---------- Projects ---------- */
 
 .project-list {

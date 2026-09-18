@@ -48,6 +48,11 @@ export const experience = [
     sub: '交付实习生',
     note: '（当时入职的时候给我高兴坏了，大公司）🎉',
     period: '2026.04 – 2026.08',
+    galleryDir: 'gallery/dongruan',
+    galleryExt: 'jpg',
+    galleryCount: 9,
+    galleryCaption:
+      '实习期间参与甲方「光轮智能」的具身数据项目，负责现场采集、采集数据管理与数据合规性审核，配合团队成员完成 1000+ 条数据内容的采集与审核。',
     points: [
       '交付与进度管控：协助交付经理跟进 10+ 个 IT 软件开发与外包项目的交付节点，汇总并清洗 15,000+ 条工时、需求变更率及 Bug 密度项目数据；搭建交付可视化周报看板，成功实现 3 项潜在延期风险的提前预警。',
       '人员与资源协调：负责 50+ 名驻场及离岸技术人员的人员入离场全流程管理、考勤复核与绩效跟进，保障项目团队稳定率达 95% 以上。',
@@ -87,7 +92,7 @@ export const projects = [
     org: '生态环境部固废中心',
     period: '2025.09 – 2026.06',
     galleryCount: 9,
-    galleryDir: 'gufei',
+    galleryDir: 'projects/gufei',
     points: [
       '运用 Python / Excel 对跨地域 80+ 家企业的 50,000+ 条业务数据进行清洗、归一化与数据建模，清洗准确率达 99.5%。',
       '对标 10+ 项国内外技术规范与市场动态，撰写 5 篇行业调研分析报告，总结 3 个行业发展趋势，赋能上级部门的战略决策。',
@@ -101,7 +106,7 @@ export const projects = [
     org: '中国环境科学研究院',
     period: '2024.10 – 2025.05',
     galleryCount: 14,
-    galleryDir: 'guangke',
+    galleryDir: 'projects/guangke',
     points: [
       '深入分析 12 万 m³ 级固体废物大型工业客户需求，对 10,000+ 条多维监控数据进行修正、剔除与补全，总结 4 类核心业务痛点，完成 B2B 客户需求画像构建。',
       '对标行业合规与成本效益，策划 3 套差异化 B2B 解决方案，帮助客户降低预估综合成本 25%。',
