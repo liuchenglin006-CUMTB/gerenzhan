@@ -331,7 +331,120 @@ function ImageLightbox({ zoom, setZoom }) {
   )
 }
 
-function TimelineGroup({ title, items, activeId, onZoom }) {
+function VideoLightbox({ video, onClose }) {
+  const dialogRef = useRef(null)
+  const playerRef = useRef(null)
+  const [playError, setPlayError] = useState(false)
+
+  useEffect(() => {
+    const dialog = dialogRef.current
+    const player = playerRef.current
+    const previousOverflow = document.body.style.overflow
+    const previousFocus = document.activeElement
+
+    dialog.showModal()
+    document.body.style.overflow = 'hidden'
+    player.muted = false
+    player.volume = 1
+    // 用户点击后再加载、播放，保留原视频声音。
+    player.play().catch(() => {
+      // 浏览器拦截自动播放时，仍可使用原生播放控件。
+    })
+
+    return () => {
+      player.pause()
+      dialog.close()
+      document.body.style.overflow = previousOverflow
+      previousFocus?.focus({ preventScroll: true })
+    }
+  }, [])
+
+  return (
+    <dialog
+      ref={dialogRef}
+      className="video-dialog"
+      aria-labelledby="video-dialog-title"
+      aria-describedby="video-dialog-hint"
+      onCancel={(event) => {
+        event.preventDefault()
+        onClose()
+      }}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onClose()
+      }}
+    >
+      <div className="video-dialog-panel">
+        <div className="video-dialog-head">
+          <h3 id="video-dialog-title">{video.title}</h3>
+          <button
+            type="button"
+            className="video-dialog-close"
+            onClick={onClose}
+            aria-label="关闭视频"
+            autoFocus
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
+          </button>
+        </div>
+        <video
+          ref={playerRef}
+          className="video-dialog-player"
+          src={video.src}
+          poster={video.poster}
+          controls
+          playsInline
+          preload="metadata"
+          onError={() => setPlayError(true)}
+        >
+          你的浏览器暂不支持视频播放。
+          <a href={video.src}>打开视频文件</a>
+        </video>
+        {playError && (
+          <p className="video-dialog-error" role="alert">
+            视频暂时无法加载，请稍后重试，或<a href={video.src}>直接打开视频</a>。
+          </p>
+        )}
+        <p id="video-dialog-hint" className="video-dialog-hint">
+          原声播放 · 按 Esc 或点击弹窗外关闭
+        </p>
+      </div>
+    </dialog>
+  )
+}
+
+function TimelineVideo({ video, onPlay }) {
+  return (
+    <div className="tl-video">
+      <div className="tl-gallery-text tl-video-text">
+        <svg className="tl-gallery-arrow tl-video-arrow" viewBox="0 0 120 60" aria-hidden="true">
+          <path d="M116 10 C 84 44, 48 52, 16 42" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <path d="M30 30 L14 42 L32 50" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        <h4 className="tl-video-title">{video.title}</h4>
+        <p className="tl-gallery-caption">{video.caption}</p>
+        <p className="tl-gallery-hint">点击视频观看 · 含原声讲解</p>
+      </div>
+      <button
+        type="button"
+        className="tl-video-preview"
+        onClick={() => onPlay(video)}
+        aria-label={`播放${video.title}（含声音）`}
+        aria-haspopup="dialog"
+      >
+        <img src={video.poster} alt="财务报销自动审核流程演示画面" loading="lazy" width="960" height="474" />
+        <span className="tl-video-badge">AI 提效 · 实例演示</span>
+        <span className="tl-video-play" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 5.5v13l10-6.5z" /></svg>
+        </span>
+        <span className="tl-video-meta"><span>点击播放 · 有声</span><span>{video.duration}</span></span>
+      </button>
+    </div>
+  )
+}
+
+function TimelineGroup({ title, items, activeId, onZoom, onPlayVideo }) {
   return (
     <div className="tl-group">
       <p className="tl-title">{title}</p>
@@ -413,6 +526,7 @@ function TimelineGroup({ title, items, activeId, onZoom }) {
                 </div>
               </div>
             )}
+            {item.video && <TimelineVideo video={item.video} onPlay={onPlayVideo} />}
           </article>
         ))}
       </div>
@@ -422,6 +536,7 @@ function TimelineGroup({ title, items, activeId, onZoom }) {
 
 function Experience({ onZoom }) {
   const [zoom, setZoom] = useState(false)
+  const [activeVideo, setActiveVideo] = useState(null)
   const [activeId, setActiveId] = useState(null)
   const flashTimer = useRef(null)
 
@@ -541,10 +656,14 @@ function Experience({ onZoom }) {
               items={experience}
               activeId={activeId}
               onZoom={onZoom}
+              onPlayVideo={setActiveVideo}
             />
           </div>
         </div>
       </div>
+      {activeVideo && (
+        <VideoLightbox video={activeVideo} onClose={() => setActiveVideo(null)} />
+      )}
       {zoom && (
         <div
           className="lightbox"

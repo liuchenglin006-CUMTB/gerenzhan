@@ -53,6 +53,14 @@ export const experience = [
     galleryCount: 9,
     galleryCaption:
       '实习期间参与甲方「光轮智能」的具身数据项目，负责现场采集、采集数据管理与数据合规性审核，配合团队成员完成 1000+ 条数据内容的采集与审核。',
+    video: {
+      title: 'Agent 提效实例',
+      src: '/videos/agent-efficiency.mp4',
+      poster: '/videos/agent-efficiency-poster.jpg',
+      duration: '03:00',
+      caption:
+        '负责公司驻场人员的财务报销审核工作，利用Cursor+Codex开发了一套自动审核流程，使审核效率提高60% 以上，并获得公司AI提效竞赛二等奖、得到全公司推广。',
+    },
     points: [
       '交付与进度管控：协助交付经理跟进 10+ 个 IT 软件开发与外包项目的交付节点，汇总并清洗 15,000+ 条工时、需求变更率及 Bug 密度项目数据；搭建交付可视化周报看板，成功实现 3 项潜在延期风险的提前预警。',
       '人员与资源协调：负责 50+ 名驻场及离岸技术人员的人员入离场全流程管理、考勤复核与绩效跟进，保障项目团队稳定率达 95% 以上。',
