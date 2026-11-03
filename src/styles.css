@@ -1556,7 +1556,7 @@ ul {
   color: var(--muted);
 }
 
-/* 图集在左上方，视频在右下方，文字与箭头位于视频左侧。 */
+/* 图集下方的 Agent 提效：左侧说明、中间视频、右侧获奖图片。 */
 .tl-video {
   margin-top: 36px;
   display: grid;
@@ -1567,6 +1567,52 @@ ul {
 
 .tl-video-text {
   min-width: 0;
+}
+
+.tl-video--with-award {
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.35fr) minmax(0, 0.5fr);
+  gap: 20px;
+}
+
+.tl-award-preview {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  padding: 8px 8px 0;
+  border: 1px solid rgba(110, 231, 255, 0.22);
+  border-radius: 14px;
+  background: var(--bg-2);
+  color: var(--accent);
+  font: inherit;
+  cursor: zoom-in;
+  overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tl-award-preview:hover {
+  border-color: rgba(110, 231, 255, 0.6);
+  box-shadow: 0 0 24px rgba(110, 231, 255, 0.1);
+}
+
+.tl-award-preview:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.tl-award-preview img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 300px;
+  object-fit: contain;
+  border-radius: 7px;
+}
+
+.tl-award-hint {
+  display: block;
+  padding: 9px 0;
+  font-size: 12px;
+  text-align: center;
 }
 
 .tl-video-arrow {
@@ -2141,6 +2187,18 @@ ul {
   .project-list {
     gap: 88px;
   }
+
+  .tl-video--with-award {
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 0.65fr);
+  }
+
+  .tl-video--with-award .tl-video-text {
+    grid-column: 1 / -1;
+  }
+
+  .tl-video--with-award .tl-video-arrow {
+    display: none;
+  }
 }
 
 @media (max-width: 640px) {
@@ -2167,8 +2225,13 @@ ul {
   }
 
   .tl-gallery,
-  .tl-video {
+  .tl-video,
+  .tl-video--with-award {
     grid-template-columns: 1fr;
+  }
+
+  .tl-award-preview {
+    max-width: 220px;
   }
 
   .tl-gallery-arrow {

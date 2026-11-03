@@ -280,6 +280,7 @@ const galleryImages = (item) =>
 function ImageLightbox({ zoom, setZoom }) {
   if (!zoom) return null
   const { gallery, title, index } = zoom
+  const multiple = gallery.length > 1
   const step = (delta) =>
     setZoom((z) => z && { ...z, index: (z.index + delta + z.gallery.length) % z.gallery.length })
 
@@ -291,7 +292,7 @@ function ImageLightbox({ zoom, setZoom }) {
       aria-modal="true"
       aria-label="图片放大预览"
     >
-      <button
+      {multiple && <button
         type="button"
         className="lightbox-nav lightbox-nav--prev"
         aria-label="上一张"
@@ -303,7 +304,7 @@ function ImageLightbox({ zoom, setZoom }) {
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="M15 5l-7 7 7 7" />
         </svg>
-      </button>
+      </button>}
       <img
         key={index}
         className="lightbox-img"
@@ -311,7 +312,7 @@ function ImageLightbox({ zoom, setZoom }) {
         alt={`${title} · 图片 ${index + 1}`}
         onClick={(e) => e.stopPropagation()}
       />
-      <button
+      {multiple && <button
         type="button"
         className="lightbox-nav lightbox-nav--next"
         aria-label="下一张"
@@ -323,9 +324,9 @@ function ImageLightbox({ zoom, setZoom }) {
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="M9 5l7 7-7 7" />
         </svg>
-      </button>
+      </button>}
       <p className="lightbox-hint">
-        {index + 1} / {gallery.length} · ← → 切换 · 点击任意处关闭 · ESC
+        {multiple && `${index + 1} / ${gallery.length} · ← → 切换 · `}点击图片外关闭 · ESC
       </p>
     </div>
   )
@@ -375,7 +376,7 @@ function VideoLightbox({ video, onClose }) {
     >
       <div className="video-dialog-panel">
         <div className="video-dialog-head">
-          <h3 id="video-dialog-title">{video.title}</h3>
+          <h3 id="video-dialog-title">{video.label || video.title}</h3>
           <button
             type="button"
             className="video-dialog-close"
@@ -414,9 +415,9 @@ function VideoLightbox({ video, onClose }) {
   )
 }
 
-function TimelineVideo({ video, onPlay }) {
+function TimelineVideo({ video, onPlay, onZoom }) {
   return (
-    <div className="tl-video">
+    <div className={`tl-video${video.award ? ' tl-video--with-award' : ''}`}>
       <div className="tl-gallery-text tl-video-text">
         <svg className="tl-gallery-arrow tl-video-arrow" viewBox="0 0 120 60" aria-hidden="true">
           <path d="M116 10 C 84 44, 48 52, 16 42" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -430,16 +431,34 @@ function TimelineVideo({ video, onPlay }) {
         type="button"
         className="tl-video-preview"
         onClick={() => onPlay(video)}
-        aria-label={`播放${video.title}（含声音）`}
+        aria-label={`播放${video.label || video.title}（含声音）`}
         aria-haspopup="dialog"
       >
         <img src={video.poster} alt="财务报销自动审核流程演示画面" loading="lazy" width="960" height="474" />
-        <span className="tl-video-badge">AI 提效 · 实例演示</span>
+        <span className="tl-video-badge">{video.label || video.title}</span>
         <span className="tl-video-play" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 5.5v13l10-6.5z" /></svg>
         </span>
         <span className="tl-video-meta"><span>点击播放 · 有声</span><span>{video.duration}</span></span>
       </button>
+      {video.award && (
+        <button
+          type="button"
+          className="tl-award-preview"
+          onClick={() => onZoom({ gallery: [video.award.src], title: video.award.title, index: 0 })}
+          aria-label={`放大查看${video.award.title}`}
+          aria-haspopup="dialog"
+        >
+          <img
+            src={video.award.src}
+            alt={video.award.alt}
+            width={video.award.width}
+            height={video.award.height}
+            loading="lazy"
+          />
+          <span className="tl-award-hint">＋ 点击放大</span>
+        </button>
+      )}
     </div>
   )
 }
@@ -526,7 +545,7 @@ function TimelineGroup({ title, items, activeId, onZoom, onPlayVideo }) {
                 </div>
               </div>
             )}
-            {item.video && <TimelineVideo video={item.video} onPlay={onPlayVideo} />}
+            {item.video && <TimelineVideo video={item.video} onPlay={onPlayVideo} onZoom={onZoom} />}
           </article>
         ))}
       </div>

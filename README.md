@@ -21,10 +21,11 @@ npm run dev
 
 ## 实习经历视频
 
-东软经历中的 Agent 提效视频位于光轮项目图集下方，桌面端采用左侧说明、右侧视频封面的布局。
+东软经历中的「Agent提效」位于光轮项目图集下方，桌面端从左到右依次展示说明文字、「获奖作品讲解」视频和获奖图片；窄屏自动换行。
 
 - 视频文件：`public/videos/agent-efficiency.mp4`（H.264 视频 + AAC 原声音轨）
 - 预览封面：`public/videos/agent-efficiency-poster.jpg`
+- 获奖图片：`public/gallery/dongruan/agent-efficiency-award.png`，点击可放大查看原图，按 Esc 或点击图片外关闭。
 - 视频使用适合网页播放的 1920px 宽度版本，保留完整时长与原声音轨，并将文件大小控制在 Cloudflare Pages 的单文件 25 MiB 限制内。
 - 标题、说明及素材路径：`src/data.js` 中东软经历的 `video` 字段
 - 点击封面后在居中的弹窗内有声播放，可使用原生播放器控件；按 Esc、点击弹窗外或关闭按钮退出并停止播放。
